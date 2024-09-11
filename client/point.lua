@@ -11,7 +11,6 @@ local function startPointing()
     TaskMoveNetworkByName(ped, 'task_mp_pointing', 0.5, false, 'anim@mp_point', 24)
     RemoveAnimDict("anim@mp_point")
 end
-
 local function stopPointing()
     local ped = PlayerPedId()
     if not IsPedInjured(ped) then
@@ -24,9 +23,18 @@ local function stopPointing()
     end
 end
 
+local function hasWeaponEquipped()
+    local ped = PlayerPedId()
+    local _, weapon = GetCurrentPedWeapon(ped, true)
+    return weapon ~= `WEAPON_UNARMED` 
+end
 RegisterCommand('point', function()
     local ped = PlayerPedId()
     if not IsPedInAnyVehicle(ped, false) then
+        if hasWeaponEquipped() then
+            return
+        end
+
         mp_pointing = not mp_pointing
         if mp_pointing then
             startPointing()
